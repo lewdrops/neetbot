@@ -2,9 +2,13 @@ from emoji import emojize
 
 
 async def emojize_message(message):
-    words = set(message.content.lower().split())
+    words = message.content.lower().split()
+    seen = set()
+
     for word in words:
-        emoji = emojize(f':{word}:')
-        if not emoji.startswith(':'):
-            await message.add_reaction(emoji)
-            print("reactions added!")
+        if word not in seen:
+            seen.add(word)
+            emoji = emojize(f':{word}:', use_aliases=True)
+            if not emoji.startswith(':'):
+                await message.add_reaction(emoji)
+                print("reactions added!")
