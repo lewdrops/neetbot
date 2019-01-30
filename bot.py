@@ -103,7 +103,7 @@ async def on_message(message):
         await translate(message, after_space(content))
 
     # preempt translation
-    if True:
+    if len(content) > 4:
         translation = await translate(message, content)
         if translation.src != "en":
             msg = f"`{content}` means \n`{translation.text}`"
@@ -113,6 +113,7 @@ async def on_message(message):
         link = image_link_of()
         file = discord.File("./media/doggo.jpg", filename="pic.png")
         await message.channel.send("pic.png", file=file)
+        await message.channel.send("https://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg")
         # await client.send_file(message.channel, link)
 
 client.run(DISCORD_CLIENT_ID)
