@@ -5,12 +5,21 @@ from keys import OXDICT_APPID, OXDICT_APPKEY
 oxdict = OxfordDictionaries(OXDICT_APPID, OXDICT_APPKEY)
 
 
-def get_synonyms(word, num=1):
+def use_oxford(word):
+    res = oxdict.get_synonyms(word).json()
+    data = res['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][0]['synonyms']
+    return [s['text'] for s in data]
+
+
+def get_synonyms(word, task="first", num=1):
     try:
-        res = oxdict.get_synonyms(word).json()
-        data = res['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][0]['synonyms']
-        synonyms = [s['text'] for s in data[:num]]
-        return synonyms
+        if True:
+            synonyms = use_oxford(word)
+
+        if task == "longest":
+            synonyms.sort(key=lambda w: -len(w))
+
+        return synonyms[:num]
     except:
         print("synonym fail!")
         return

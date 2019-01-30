@@ -9,8 +9,8 @@ from keys import DISCORD_CLIENT_ID
 from utils import msg_to_member
 from emojizeMessage import emojize_message
 from membership import membership_duration
-from chitchat import send_message
-from botmode import delete_msg_in, BOTMODE_DELETION_TIME
+from chitchat import send_message, good_bot_reply
+from botmode import delete_msg_in
 from dictionary import get_synonyms
 
 # global constants
@@ -61,10 +61,21 @@ async def on_message(message):
     if str(message.author) in botmode_members:
         await delete_msg_in(message)
 
-    if content == "$synonym":
-        word = content[content.index(" ")+1:]
+    if content.startswith("$synonym"):
+        _, word, task, *_ = content.split() + [None]  # default command is to return a synonym
         await send_message(message, text=f"looking up {word}...")
-        res = get_synonyms(word)
+        res = get_synonyms(word, task)
         await send_message(message, ("found: " + ", ".join(res)) if res else "No synonyms found")
+
+    if content.startswith("$fancify"):
+        _, *text = content.split()
+        fancy_text = []
+        for word in text:
+            fancier = get_synonyms(word, "longest")
+            fancy_text.append(fancier[0] if fancier else word)
+        await send_message(message, ' '.join(fancy_text))
+
+    if content == "good bot":
+        await good_bot_reply(message)
 
 client.run(DISCORD_CLIENT_ID)

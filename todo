@@ -1,1 +1,3 @@
 set up a bunch of filters instead of countless conditionals
+
+parser for commands, get list or dict of arguments, call appropriate functions
