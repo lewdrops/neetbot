@@ -6,12 +6,13 @@ import discord
 
 # project imports
 from keys import DISCORD_CLIENT_ID
-from utils import msg_to_member
+from utils import msg_to_member, after_space
 from emojizeMessage import emojize_message
 from membership import membership_duration
 from chitchat import send_message, good_bot_reply
 from botmode import delete_msg_in
 from dictionary import get_synonyms
+from languages import translate
 
 # global constants
 
@@ -90,5 +91,16 @@ async def on_message(message):
         emojis = ' '.join(str(e) for e in emoji_list)
         print(emojis)
         await send_message(message, emojis)
+
+    if content.startswith("$trans"):
+        print(after_space(content))
+        await translate(message, after_space(content))
+
+    # preempt translation
+    if True:
+        translation = await translate(message, content)
+        if translation.src != "en":
+            msg = f"`{content}` means \n'{translation.text}'"
+            await send_message(message, text=msg)
 
 client.run(DISCORD_CLIENT_ID)
