@@ -10,8 +10,16 @@ from utils import msg_to_member
 from emojizeMessage import emojize_message
 from membership import membership_duration
 from chitchat import greet_back
+from botmode import delete_msg_in, BOTMODE_DELETION_TIME
+
+# global constants
+
+# setup
 
 client = discord.Client()
+
+# global vars
+botmode_members = set()
 
 
 @client.event
@@ -39,5 +47,18 @@ async def on_message(message):
         target = msg_to_member(message)
         reply = membership_duration(target)
         msg = await message.channel.send(reply)
+
+    # delete every msg by user after a few secs
+    if message.content == "$botmode":
+        target = str(message.author)
+        if target in botmode_members:
+            botmode_members.remove(target)
+            await greet_back(message, text="bot mode off!")
+        else:
+            botmode_members.add(target)
+            await greet_back(message, text="bot mode on!")
+
+    if str(message.author) in botmode_members:
+        await delete_msg_in(message)
 
 client.run(CLIENT_ID)
