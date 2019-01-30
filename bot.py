@@ -21,6 +21,7 @@ client = discord.Client()
 
 # global vars
 botmode_members = set()
+emoji_dict = {}
 
 
 @client.event
@@ -82,11 +83,12 @@ async def on_message(message):
         await good_bot_reply(message)
 
     if "momoa" in content.lower():
-        await send_message(message, ":momoa:", 3)
+        await send_message(message, "<:momoa:539246620462678027>", 3)
 
     if content == "$listemojis":
         emoji_list = message.guild.emojis
         emojis = ' '.join(str(e) for e in emoji_list)
+        print(emojis)
         await send_message(message, emojis)
 
 client.run(DISCORD_CLIENT_ID)
