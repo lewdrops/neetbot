@@ -2,6 +2,8 @@ keys.py
 junk.py
 pythonTrends.py
 
+media/*
+
 venv/*
 .idea/*
 __pycache__/*

@@ -3,6 +3,7 @@
 # other libraries
 import asyncio
 import discord
+from discord.ext import commands
 
 # project imports
 from keys import DISCORD_CLIENT_ID
@@ -13,6 +14,7 @@ from chitchat import send_message, good_bot_reply
 from botmode import delete_msg_in
 from dictionary import get_synonyms
 from languages import translate
+from images import image_link_of
 
 # global constants
 
@@ -20,9 +22,13 @@ from languages import translate
 
 client = discord.Client()
 
+bot = commands.Bot(command_prefix="!")
+
 # global vars
 botmode_members = set()
 emoji_dict = {}
+
+# functions
 
 
 @client.event
@@ -100,7 +106,13 @@ async def on_message(message):
     if True:
         translation = await translate(message, content)
         if translation.src != "en":
-            msg = f"`{content}` means \n'{translation.text}'"
+            msg = f"`{content}` means \n`{translation.text}`"
             await send_message(message, text=msg)
+
+    if content.startswith("$pic"):
+        link = image_link_of()
+        file = discord.File("./media/doggo.jpg", filename="pic.png")
+        await message.channel.send("pic.png", file=file)
+        # await client.send_file(message.channel, link)
 
 client.run(DISCORD_CLIENT_ID)
