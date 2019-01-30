@@ -31,6 +31,9 @@ async def on_ready():
 @client.event
 async def on_message(message):
 
+    if message.author == client.user:
+        return
+
     content = message.content
 
     if str(message.author) == 'lastdrop#6308':
@@ -77,5 +80,13 @@ async def on_message(message):
 
     if content == "good bot":
         await good_bot_reply(message)
+
+    if "momoa" in content.lower():
+        await send_message(message, ":momoa:", 3)
+
+    if content == "$listemojis":
+        emoji_list = message.guild.emojis
+        emojis = ' '.join(str(e) for e in emoji_list)
+        await send_message(message, emojis)
 
 client.run(DISCORD_CLIENT_ID)
