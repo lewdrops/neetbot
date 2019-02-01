@@ -2,13 +2,13 @@ import random
 
 import asyncio
 
-GOOD_BOT_REPLIES = ["That's what you are, but what am I?",
-                    "No, I am Great Bot",
-                    "B-baka!"]
+GOOD_BOT_REPLIES = [_("That's what you are, but what am I?"),
+                    _("No, I am Great Bot"),
+                    _("B-baka!")]
 
 
-async def send_message(message, text="Hello!", delete_in=False):
-    print("received a message", '-', message.content, '\n', message)
+async def send_message(message, text=_("Hello!"), delete_in=False): #Note: this translation will be evaluated at initialization
+    print(_("received a message"), '-', message.content, '\n', message)
 
     msg = await message.channel.send(text)
 
