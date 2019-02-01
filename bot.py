@@ -1,4 +1,6 @@
 # std lib
+import gettext
+gettext.install('base', localedir='locale') #let's do nothing too crazy for now, let's just extract what needs to be translated.
 
 # other libraries
 import asyncio
@@ -15,6 +17,8 @@ from botmode import delete_msg_in
 from dictionary import get_synonyms
 from languages import translate
 from images import image_link_of
+
+
 
 # global constants
 
@@ -33,7 +37,7 @@ emoji_dict = {}
 
 @client.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print(_('We have logged in as {user}').format(client.user))
 
 
 @client.event
@@ -64,19 +68,19 @@ async def on_message(message):
         target = str(message.author)
         if target in botmode_members:
             botmode_members.remove(target)
-            await send_message(message, text="bot mode off!")
+            await send_message(message, text=_("bot mode off!"))
         else:
             botmode_members.add(target)
-            await send_message(message, text="bot mode on!")
+            await send_message(message, text=_("bot mode on!"))
 
     if str(message.author) in botmode_members:
         await delete_msg_in(message)
 
     if content.startswith("$synonym"):
         _, word, task, *_ = content.split() + [None]  # default command is to return a synonym
-        await send_message(message, text=f"looking up {word}...")
+        await send_message(message, text=_("looking up {word}...").format())
         res = get_synonyms(word, task)
-        await send_message(message, ("found: " + ", ".join(res)) if res else "No synonyms found")
+        await send_message(message, "found: {}".format(", ".join(res)) if res else "No synonyms found")
 
     if content.startswith("$fancify"):
         _, *text = content.split()
@@ -86,7 +90,7 @@ async def on_message(message):
             fancy_text.append(fancier[0] if fancier else word)
         await send_message(message, ' '.join(fancy_text))
 
-    if content == "good bot":
+    if content == _("good bot"):
         await good_bot_reply(message)
 
     if "momoa" in content.lower():
@@ -106,7 +110,7 @@ async def on_message(message):
     if len(content) > 4:
         translation = await translate(message, content)
         if translation.src != "en":
-            msg = f"`{content}` means \n`{translation.text}`"
+            msg = _("`{content}` means \n`{translation.text}`").format
             await send_message(message, text=msg)
 
     if content.startswith("$pic"):
