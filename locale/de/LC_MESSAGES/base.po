@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-02-01 00:16+PST\n"
+"PO-Revision-Date: 2019-02-01 10:43+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 2.2.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de_DE\n"
+
+#: bot.py:40
+msgid "We have logged in as {user}"
+msgstr "Wir haben uns angemeldet als {user}"
+
+#: bot.py:71
+msgid "bot mode off!"
+msgstr "Bot ausgeschaltet!"
+
+#: bot.py:74
+msgid "bot mode on!"
+msgstr "Bot eingeschaltet!"
+
+#: bot.py:81
+msgid "looking up {word}..."
+msgstr "{word} wird nachgeschlagen..."
+
+#: bot.py:93
+msgid "good bot"
+msgstr "guter bot"
+
+#: bot.py:113
+msgid ""
+"`{content}` means \n"
+"`{translation.text}`"
+msgstr ""
+"`{content}` bedeutet \n"
+"\v`{translation.text}`"
+
+#: chitchat.py:5
+msgid "That's what you are, but what am I?"
+msgstr "Das bist du, aber was bin ich?"
+
+#: chitchat.py:6
+msgid "No, I am Great Bot"
+msgstr "Nein, ich bin ein großartiger Bot."
+
+#: chitchat.py:7
+msgid "B-baka!"
+msgstr "Idiot!"
+
+#: chitchat.py:10
+msgid "Hello!"
+msgstr "Hallo!"
+
+#: chitchat.py:11
+msgid "received a message"
+msgstr "Eine Nachricht wurde empfangen"
+
+#: membership.py:8
+msgid "{member} - joined on - {join_date}, and has been here for {duration}"
+msgstr "{member} - beigetreten am - {join_date} ,"
