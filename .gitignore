@@ -3,6 +3,7 @@ junk.py
 pythonTrends.py
 
 media/*
+src/logs/*
 
 venv/*
 .idea/*

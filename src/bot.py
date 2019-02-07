@@ -19,6 +19,7 @@ from languages import translate
 from images import image_link_of
 
 # global constants
+MEDIA_PATH = "../media/"
 
 # setup
 client = discord.Client()
@@ -102,17 +103,16 @@ async def on_message(message):
         await translate(message, after_space(content))
 
     # preempt translation
-    if len(content) > 4:
+    if False:
         translation = await translate(message, content)
         if translation.src != "en":
             msg = _("`{content}` means \n`{translation.text}`").format
             await send_message(message, text=msg)
 
     if content.startswith("$pic"):
-        link = image_link_of()
-        file = discord.File("./media/doggo.jpg", filename="pic.png")
-        await message.channel.send("pic.png", file=file)
-        await message.channel.send("https://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg")
-        # await client.send_file(message.channel, link)
-
+        keyword = after_space(message.content)
+        e = discord.Embed()
+        e.set_image(url=await image_link_of(keyword))
+        await message.channel.send(embed=e)
+        # await message.channel.send(await image_link_of(keyword))
 client.run(environ['DISCORD_CLIENT_ID'])
