@@ -1,11 +1,10 @@
 # std lib
-import gettext
-gettext.install('base', localedir='locale') #let's do nothing too crazy for now, let's just extract what needs to be translated.
+import asyncio
 
 # other libraries
-import asyncio
 import discord
-from discord.ext import commands
+import gettext
+gettext.install('base', localedir='locale')  # let's do nothing too crazy for now, let's just extract what needs to be translated.
 
 # project imports
 from keys import DISCORD_CLIENT_ID
@@ -18,15 +17,10 @@ from dictionary import get_synonyms
 from languages import translate
 from images import image_link_of
 
-
-
 # global constants
 
 # setup
-
 client = discord.Client()
-
-bot = commands.Bot(command_prefix="!")
 
 # global vars
 botmode_members = set()
@@ -37,7 +31,7 @@ emoji_dict = {}
 
 @client.event
 async def on_ready():
-    print(_('We have logged in as {user}').format(client.user))
+    print(f"We have logged in as {client.user}")
 
 
 @client.event
@@ -90,8 +84,8 @@ async def on_message(message):
             fancy_text.append(fancier[0] if fancier else word)
         await send_message(message, ' '.join(fancy_text))
 
-    if content == _("good bot"):
-        await good_bot_reply(message)
+    # if content == _("good bot"):
+    #     await good_bot_reply(message)
 
     if "momoa" in content.lower():
         await send_message(message, "<:momoa:539246620462678027>", 3)
