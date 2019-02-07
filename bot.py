@@ -1,5 +1,6 @@
 # std lib
 import asyncio
+from os import environ
 
 # other libraries
 import discord
@@ -7,7 +8,7 @@ import gettext
 gettext.install('base', localedir='locale')  # let's do nothing too crazy for now, let's just extract what needs to be translated.
 
 # project imports
-from keys import DISCORD_CLIENT_ID
+# from keys import DISCORD_CLIENT_ID
 from utils import msg_to_member, after_space
 from emojizeMessage import emojize_message
 from membership import membership_duration
@@ -114,4 +115,4 @@ async def on_message(message):
         await message.channel.send("https://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg")
         # await client.send_file(message.channel, link)
 
-client.run(DISCORD_CLIENT_ID)
+client.run(environ['DISCORD_CLIENT_ID'])

@@ -1,8 +1,8 @@
+from os import environ
 from oxforddictionaries.words import OxfordDictionaries
 
-from keys import OXDICT_APPID, OXDICT_APPKEY
-
-oxdict = OxfordDictionaries(OXDICT_APPID, OXDICT_APPKEY)
+# from keys import OXDICT_APPID, OXDICT_APPKEY
+oxdict = OxfordDictionaries(environ['OXDICT_APPID'], environ['OXDICT_APPKEY'])
 
 
 def use_oxford(word):
