@@ -1,0 +1,5 @@
+oxforddictionaries==0.1.101
+discord.py==0.16.12
+emoji==0.5.1
+googletrans==2.4.0
+discord==0.16.12
