@@ -4,6 +4,7 @@ from os import environ
 
 # other libraries
 import discord
+from discord.ext import commands
 import gettext
 gettext.install('base', localedir='locale')  # let's do nothing too crazy for now, let's just extract what needs to be translated.
 
@@ -22,24 +23,26 @@ from images import image_link_of
 MEDIA_PATH = "../media/"
 
 # setup
-client = discord.Client()
+# client = discord.Client()
+bot = commands.Bot(command_prefix='$',
+                   description="Halp urself")
 
 # global vars
 botmode_members = set()
 emoji_dict = {}
 
-# functions
+# commands
 
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f"We have logged in as {client.user}")
+    print(f"We have logged in as {bot.user}")
 
 
-@client.event
+@bot.event
 async def on_message(message):
 
-    if message.author == client.user:
+    if message.author == bot.user:
         return
 
     content = message.content
@@ -51,40 +54,17 @@ async def on_message(message):
         if " just left " in S:
             name = S[:S.index(' ')]
             # target = message.guild.get_member_named(name)
-            target = client.users.find(name)
+            target = bot.users.find(name)
             print(target)
-
-    if content.startswith('$join'):
-        target = msg_to_member(message)
-        reply = membership_duration(target)
-        msg = await message.channel.send(reply)
-
-    # delete every msg by user after a few secs
-    if content == "$botmode":
-        target = str(message.author)
-        if target in botmode_members:
-            botmode_members.remove(target)
-            await send_message(message, text=_("bot mode off!"))
-        else:
-            botmode_members.add(target)
-            await send_message(message, text=_("bot mode on!"))
 
     if str(message.author) in botmode_members:
         await delete_msg_in(message)
 
-    if content.startswith("$synonym"):
-        _, word, task, *_ = content.split() + [None]  # default command is to return a synonym
-        await send_message(message, text=_("looking up {word}...").format())
-        res = get_synonyms(word, task)
-        await send_message(message, "found: {}".format(", ".join(res)) if res else "No synonyms found")
-
-    if content.startswith("$fancify"):
-        _, *text = content.split()
-        fancy_text = []
-        for word in text:
-            fancier = get_synonyms(word, "longest")
-            fancy_text.append(fancier[0] if fancier else word)
-        await send_message(message, ' '.join(fancy_text))
+    # if content.startswith("$synonym"):
+    #     _, word, task, *_ = content.split() + [None]  # default command is to return a synonym
+    #     await send_message(message, text=_("looking up {word}...").format())
+    #     res = get_synonyms(word, task)
+    #     await send_message(message, "found: {}".format(", ".join(res)) if res else "No synonyms found")
 
     # if content == _("good bot"):
     #     await good_bot_reply(message)
@@ -92,27 +72,67 @@ async def on_message(message):
     if "momoa" in content.lower():
         await send_message(message, "<:momoa:539246620462678027>", 3)
 
-    if content == "$listemojis":
-        emoji_list = message.guild.emojis
-        emojis = ' '.join(str(e) for e in emoji_list)
-        print(emojis)
-        await send_message(message, emojis)
-
-    if content.startswith("$trans"):
-        print(after_space(content))
-        await translate(message, after_space(content))
-
     # preempt translation
-    if False:
-        translation = await translate(message, content)
-        if translation.src != "en":
-            msg = _("`{content}` means \n`{translation.text}`").format
-            await send_message(message, text=msg)
+    # if False:
+    #     translation = await translate(message, content)
+    #     if translation.src != "en":
+    #         msg = _("`{content}` means \n`{translation.text}`").format
+    #         await send_message(message, text=msg)
 
-    if content.startswith("$pic"):
-        keyword = after_space(message.content)
-        e = discord.Embed()
-        e.set_image(url=await image_link_of(keyword))
-        await message.channel.send(embed=e)
-        # await message.channel.send(await image_link_of(keyword))
-client.run(environ['DISCORD_CLIENT_ID'])
+    await bot.process_commands(message)
+
+
+@bot.command(aliases=["membership-duration"])
+async def membership(ctx, arg):
+    """How long a user has been a guild member"""
+
+    target = msg_to_member(ctx.message)
+    reply = membership_duration(target)
+    await ctx.message.channel.send(reply)
+
+# delete every msg by user after a few secs
+@bot.command(aliases=["toggle-botmode"])
+async def botmode(ctx):
+    """In botmode, commands and replies auto-delete after a while"""
+
+    target = str(ctx.message.author)
+    if target in botmode_members:
+        botmode_members.remove(target)
+        await send_message(ctx.message, text=_("bot mode off!"))
+    else:
+        botmode_members.add(target)
+        await send_message(ctx.message, text=_("bot mode on!"))
+
+@bot.command(aliases=["list-emojis"])
+async def emojis(ctx):
+    """lists the guild's emojis"""
+
+    emoji_list = ctx.message.guild.emojis
+    emojis = ' '.join(str(e) for e in emoji_list)
+    print(emojis)
+    await send_message(ctx.message, emojis)
+
+@bot.command()
+async def fancify(ctx, *text):
+    """substitute fancy words to sound pretentious"""
+
+    fancy_text = []
+    for word in text:
+        fancier = get_synonyms(word, "longest")
+        fancy_text.append(fancier[0] if fancier else word)
+    await send_message(ctx.message, ' '.join(fancy_text))
+
+@bot.command(aliases=["translate"])
+async def trans(ctx, text):
+    """google translates to english"""
+    await ctx.send((await translate(ctx.message, text)).text)
+
+@bot.command(aliases=["picture", "pic-of"])
+async def pic(ctx, keyword):
+    """embed a pic from google images for the keyword"""
+
+    e = discord.Embed()
+    e.set_image(url=await image_link_of(keyword))
+    await ctx.message.channel.send(embed=e)
+
+bot.run(environ['DISCORD_BOT_TOKEN'])
