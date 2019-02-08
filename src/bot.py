@@ -10,7 +10,7 @@ gettext.install('base', localedir='locale')  # let's do nothing too crazy for no
 
 # project imports
 # from keys import DISCORD_CLIENT_ID
-from utils import msg_to_member, after_space, toggle_role_for
+from utils import msg_to_member, after_space, get_role, toggle_role_for
 from emojizeMessage import emojize_message
 from membership import membership_duration
 from chitchat import send_message, good_bot_reply
@@ -28,7 +28,6 @@ bot = commands.Bot(command_prefix='$',
                    description="Halp urself")
 
 # global vars
-botmode_members = set()
 emoji_dict = {}
 
 
@@ -55,7 +54,7 @@ async def on_message(message):
             target = bot.users.find(name)
             print(target)
 
-    if str(message.author) in botmode_members:
+    if message.author in get_role(message, "botmode").members:
         await delete_msg_in(message)
 
     # if content.startswith("$synonym"):
@@ -88,32 +87,25 @@ async def membership(ctx, arg):
     reply = membership_duration(target)
     await ctx.message.channel.send(reply)
 
+
 # delete every msg by user after a few secs
 @bot.command(aliases=["toggle-botmode"])
 async def botmode(ctx):
     """In botmode, commands and replies auto-delete after a while"""
+    await toggle_role_for(ctx, "botmode", ("bot mode on!", "bot mode off!"))
 
-    target = str(ctx.message.author)
-    if target in botmode_members:
-        botmode_members.remove(target)
-        await send_message(ctx.message, text=_("bot mode off!"))
-    else:
-        botmode_members.add(target)
-        await send_message(ctx.message, text=_("bot mode on!"))
 
 @bot.command(aliases=["list-emojis"])
 async def emojis(ctx):
     """lists the guild's emojis"""
+    await ctx.send(' '.join(str(e) for e in ctx.message.guild.emojis))
 
-    emoji_list = ctx.message.guild.emojis
-    emojis = ' '.join(str(e) for e in emoji_list)
-    print(emojis)
-    await send_message(ctx.message, emojis)
 
 @bot.command(aliases=["toggle-emojify"])
 async def emojify(ctx):
     """toggles 'emojifier' role, where botty react to what you say with emojis"""
     await toggle_role_for(ctx, "emojifier", ("ONE OF US!", f"ET TU, {ctx.message.author.name}...?"))
+
 
 @bot.command()
 async def fancify(ctx, *text):
@@ -125,10 +117,12 @@ async def fancify(ctx, *text):
         fancy_text.append(fancier[0] if fancier else word)
     await send_message(ctx.message, ' '.join(fancy_text))
 
+
 @bot.command(aliases=["translate"])
 async def trans(ctx, text):
     """google translates to english"""
     await ctx.send((await translate(ctx.message, text)).text)
+
 
 @bot.command(aliases=["picture", "pic-of"])
 async def pic(ctx, keyword):
@@ -136,6 +130,15 @@ async def pic(ctx, keyword):
 
     e = discord.Embed()
     e.set_image(url=await image_link_of(keyword))
+    await ctx.message.channel.send(embed=e)
+
+
+@bot.command(aliases=["gif-of"])
+async def gif(ctx, keyword):
+    """embed a gif from google images for the keyword"""
+
+    e = discord.Embed()
+    e.set_image(url=await image_link_of(keyword, format="gif"))
     await ctx.message.channel.send(embed=e)
 
 bot.run(environ['DISCORD_BOT_TOKEN'])

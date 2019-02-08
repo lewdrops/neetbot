@@ -9,9 +9,13 @@ def msg_to_member(message):
     return target
 
 
+def get_role(ctx, role_name):
+    return discord.utils.get(ctx.guild.roles, name=role_name)
+
+
 async def toggle_role_for(ctx, role_name, notices=(None, None)):
     user = ctx.message.author
-    role = discord.utils.get(ctx.guild.roles, name=role_name)
+    role = get_role(ctx, role_name)
 
     if notices == (None, None):
         notrices = (f"{role_name} added to {user}", f"{role_name} removed from {user}")
