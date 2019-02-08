@@ -112,6 +112,19 @@ async def emojis(ctx):
     print(emojis)
     await send_message(ctx.message, emojis)
 
+@bot.command(aliases=["toggle-emojify"])
+async def emojify(ctx):
+    """toggles 'emojifier' role, where botty react to what you say with emojis"""
+    user = ctx.message.author
+    role = discord.utils.get(ctx.guild.roles, name="emojifier")
+
+    if user in role.members:
+        await user.remove_roles(role)
+        await ctx.send(f"ET TU, {user.name}...?")
+    else:
+        await user.add_roles(role)
+        await ctx.send("ONE OF US!")
+
 @bot.command()
 async def fancify(ctx, *text):
     """substitute fancy words to sound pretentious"""
