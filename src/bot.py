@@ -141,18 +141,18 @@ async def gif(ctx, keyword):
     e.set_image(url=await image_link_of(keyword, format="gif"))
     await ctx.message.channel.send(embed=e)
 
+
 @bot.command(aliases=["we"])
 async def word_equation(ctx, *words):
     matches = find_match(''.join(words))
     await ctx.send(f"`{' '.join(words)}` is {matches[0][0]}")
 
-@bot.command
-async def sparql(ctx, text):
+
+@bot.command()
+async def sparql(ctx, *text):
     ctx.send(_("Your results are as follows.\n"
                "```\n"
                "{result}"
                "```\n").format(result=Sparql(text.split()[0], text.split[1:])))
-               
-               
 
 bot.run(environ['DISCORD_BOT_TOKEN'])

@@ -2,7 +2,8 @@ import gensim
 
 WORD2VEC_WEIGHTS = '../word2vec/GoogleNews-vectors-negative300.bin'
 
-model = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_WEIGHTS, binary=True)
+if False:
+    model = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_WEIGHTS, binary=True)
 
 import re
 
