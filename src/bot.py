@@ -17,6 +17,7 @@ from chitchat import send_message, good_bot_reply
 from botmode import delete_msg_in
 from dictionary import get_synonyms
 from languages import translate
+from nlp import find_match
 from images import image_link_of
 
 # global constants
@@ -44,8 +45,6 @@ async def on_message(message):
 
     content = message.content
 
-    if str(message.author) == 'lastdrop#6308':
-        await emojize_message(message)
     if str(message.author) == 'MEE6#4876':  # todo: delete mee6's message if user has been a member for less than two days
         S = content
         if " just left " in S:
@@ -140,5 +139,10 @@ async def gif(ctx, keyword):
     e = discord.Embed()
     e.set_image(url=await image_link_of(keyword, format="gif"))
     await ctx.message.channel.send(embed=e)
+
+@bot.command(aliases=["we"])
+async def word_equation(ctx, *words):
+    matches = find_match(''.join(words))
+    await ctx.send(f"`{' '.join(words)}` is {matches[0][0]}")
 
 bot.run(environ['DISCORD_BOT_TOKEN'])
