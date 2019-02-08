@@ -19,6 +19,7 @@ from dictionary import get_synonyms
 from languages import translate
 from nlp import find_match
 from images import image_link_of
+from sparql import Sparql
 
 # global constants
 MEDIA_PATH = "../media/"
@@ -144,5 +145,14 @@ async def gif(ctx, keyword):
 async def word_equation(ctx, *words):
     matches = find_match(''.join(words))
     await ctx.send(f"`{' '.join(words)}` is {matches[0][0]}")
+
+@bot.command
+async def sparql(ctx, text):
+    ctx.send(_("Your results are as follows.\n"
+               "```\n"
+               "{result}"
+               "```\n").format(result=Sparql(text.split()[0], text.split[1:])))
+               
+               
 
 bot.run(environ['DISCORD_BOT_TOKEN'])
