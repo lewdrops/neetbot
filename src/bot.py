@@ -10,7 +10,7 @@ gettext.install('base', localedir='locale')  # let's do nothing too crazy for no
 
 # project imports
 # from keys import DISCORD_CLIENT_ID
-from utils import msg_to_member, after_space
+from utils import msg_to_member, after_space, toggle_role_for
 from emojizeMessage import emojize_message
 from membership import membership_duration
 from chitchat import send_message, good_bot_reply
@@ -31,8 +31,6 @@ bot = commands.Bot(command_prefix='$',
 botmode_members = set()
 emoji_dict = {}
 
-# commands
-
 
 @bot.event
 async def on_ready():
@@ -49,7 +47,7 @@ async def on_message(message):
 
     if str(message.author) == 'lastdrop#6308':
         await emojize_message(message)
-    elif str(message.author) == 'MEE6#4876':  # todo: delete mee6's message if user has been a member for less than two days
+    if str(message.author) == 'MEE6#4876':  # todo: delete mee6's message if user has been a member for less than two days
         S = content
         if " just left " in S:
             name = S[:S.index(' ')]
@@ -115,15 +113,7 @@ async def emojis(ctx):
 @bot.command(aliases=["toggle-emojify"])
 async def emojify(ctx):
     """toggles 'emojifier' role, where botty react to what you say with emojis"""
-    user = ctx.message.author
-    role = discord.utils.get(ctx.guild.roles, name="emojifier")
-
-    if user in role.members:
-        await user.remove_roles(role)
-        await ctx.send(f"ET TU, {user.name}...?")
-    else:
-        await user.add_roles(role)
-        await ctx.send("ONE OF US!")
+    await toggle_role_for(ctx, "emojifier", ("ONE OF US!", f"ET TU, {ctx.message.author.name}...?"))
 
 @bot.command()
 async def fancify(ctx, *text):
