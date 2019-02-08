@@ -145,7 +145,7 @@ async def gif(ctx, keyword):
 @bot.command(aliases=["we"])
 async def word_equation(ctx, *words):
     matches = find_match(''.join(words))
-    await ctx.send(f"`{' '.join(words)}` is {matches[0][0]}")
+    await ctx.send(f"`{' '.join(words)}` is {matches[0]}")
 
 
 @bot.command()
