@@ -2,10 +2,13 @@ import json
 import random
 from datetime import datetime
 
-random.seed(datetime.now)
-
+import discord
+from discord.ext import commands
 from google_images_download import google_images_download
+
+# setup
 response = google_images_download.googleimagesdownload()  # class instantiation
+random.seed(datetime.now)
 
 
 async def image_link_of(keyword, format=None, limit=25):
@@ -40,3 +43,29 @@ async def word_cloud_of(client, channel):
     logs = client.logs_from(channel)
     print(logs)
 
+
+class ImagesCog:
+    """testing cogs"""
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(aliases=["picture", "pic-of"])
+    async def pic(self, ctx, keyword):
+        """embed a pic from google images for the keyword"""
+
+        e = discord.Embed()
+        e.set_image(url=await image_link_of(keyword))
+        await ctx.send(embed=e)
+
+    @commands.command(aliases=["gif-of"])
+    async def gif(self, ctx, keyword):
+        """embed a gif from google images for the keyword"""
+
+        e = discord.Embed()
+        e.set_image(url=await image_link_of(keyword, format="gif"))
+        await ctx.send(embed=e)
+
+
+def setup(bot):
+    bot.add_cog(ImagesCog(bot))

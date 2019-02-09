@@ -1,6 +1,8 @@
 # std lib
 import asyncio
 from os import environ
+import sys
+import traceback
 
 # other libraries
 import discord
@@ -13,24 +15,36 @@ gettext.install('base', localedir='locale')  # let's do nothing too crazy for no
 from utils import msg_to_member, after_space, get_role, toggle_role_for
 from emojizeMessage import emojize_message
 from membership import membership_duration
-from chitchat import send_message, good_bot_reply
+from cogs.chitchat import send_message, good_bot_reply, process_reply
+import cogs.images
 from botmode import delete_msg_in
 from dictionary import get_synonyms
 from languages import translate
 from nlp import find_match
-from images import image_link_of
 from sparql import Sparql
 
 # global constants
 MEDIA_PATH = "../media/"
+COMMAND_PREFIX = '$'
 
 # setup
 # client = discord.Client()
-bot = commands.Bot(command_prefix='$',
+bot = commands.Bot(command_prefix=COMMAND_PREFIX,
                    description="Halp urself")
+
+extensions = ["cogs.simple", "cogs.images"]
 
 # global vars
 emoji_dict = {}
+
+
+if __name__ == "__main__":
+    for extension in extensions:
+        try:
+            bot.load_extension(extension)
+        except Exception as e:
+            print(f'Failed to load extension {extension}.', file=sys.stderr)
+            traceback.print_exc()
 
 
 @bot.event
@@ -40,41 +54,23 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-
-    if message.author == bot.user:
-        return
-
     content = message.content
 
-    if str(message.author) == 'MEE6#4876':  # todo: delete mee6's message if user has been a member for less than two days
-        S = content
-        if " just left " in S:
-            name = S[:S.index(' ')]
-            # target = message.guild.get_member_named(name)
-            target = bot.users.find(name)
-            print(target)
+    if message.author == bot.user \
+            or not content \
+            or content[0] is COMMAND_PREFIX:
+        return
+
+    await process_reply(message)
 
     if message.author in get_role(message, "botmode").members:
         await delete_msg_in(message)
 
-    # if content.startswith("$synonym"):
-    #     _, word, task, *_ = content.split() + [None]  # default command is to return a synonym
-    #     await send_message(message, text=_("looking up {word}...").format())
-    #     res = get_synonyms(word, task)
-    #     await send_message(message, "found: {}".format(", ".join(res)) if res else "No synonyms found")
-
-    # if content == _("good bot"):
-    #     await good_bot_reply(message)
-
-    if "momoa" in content.lower():
-        await send_message(message, "<:momoa:539246620462678027>", 3)
-
     # preempt translation
-    # if False:
-    #     translation = await translate(message, content)
-    #     if translation.src != "en":
-    #         msg = _("`{content}` means \n`{translation.text}`").format
-    #         await send_message(message, text=msg)
+    translation = await translate(message, content)
+    if translation.src != "en":
+        msg = f"`{content}` means \n`{translation.text}`"
+        await send_message(message, text=msg)
 
     await bot.process_commands(message)
 
@@ -124,24 +120,6 @@ async def trans(ctx, text):
     await ctx.send((await translate(ctx.message, text)).text)
 
 
-@bot.command(aliases=["picture", "pic-of"])
-async def pic(ctx, keyword):
-    """embed a pic from google images for the keyword"""
-
-    e = discord.Embed()
-    e.set_image(url=await image_link_of(keyword))
-    await ctx.message.channel.send(embed=e)
-
-
-@bot.command(aliases=["gif-of"])
-async def gif(ctx, keyword):
-    """embed a gif from google images for the keyword"""
-
-    e = discord.Embed()
-    e.set_image(url=await image_link_of(keyword, format="gif"))
-    await ctx.message.channel.send(embed=e)
-
-
 @bot.command(aliases=["we"])
 async def word_equation(ctx, *words):
     matches = find_match(''.join(words))
@@ -155,4 +133,4 @@ async def sparql(ctx, *text):
                "{result}"
                "```\n").format(result=Sparql(text[0], text[1:])))
 
-bot.run(environ['DISCORD_BOT_TOKEN'])
+bot.run(environ['DISCORD_BOT_TOKEN'], reconnect=True)
