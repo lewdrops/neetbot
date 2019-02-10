@@ -78,7 +78,7 @@ async def membership(ctx, arg):
 
     target = msg_to_member(ctx.message)
     reply = membership_duration(target)
-    await ctx.message.channel.send(reply)
+    await ctx.send(reply)
 
 
 # delete every msg by user after a few secs
@@ -108,7 +108,7 @@ async def fancify(ctx, *text):
     for word in text:
         fancier = get_synonyms(word, "longest")
         fancy_text.append(fancier[0] if fancier else word)
-    await send_message(ctx.message, ' '.join(fancy_text))
+    await ctx.send(' '.join(fancy_text))
 
 
 @bot.command(aliases=["tr", "translate"])
