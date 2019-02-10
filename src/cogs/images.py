@@ -1,3 +1,5 @@
+# todo: combine / simplify logic in gif & pic
+# todo: check to see if gif actually moves
 import json
 import random
 from datetime import datetime
