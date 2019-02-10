@@ -30,7 +30,7 @@ from cogs.languages import translate
 bot = commands.Bot(command_prefix=COMMAND_PREFIX,
                    description="Halp urself")
 
-startup_extensions = ["cogs.simple", "cogs.images", "cogs.reactions", "cogs.languages"]
+startup_extensions = ["cogs.images", "cogs.reactions", "cogs.languages"]
 
 # global vars
 emoji_dict = {}
