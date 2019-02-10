@@ -62,6 +62,10 @@ async def on_message(message):
         # consider clever replies
         await process_reply(message)
 
+        # add reactions if author is an emojifier
+        if await has_role(message, "emojifier"):
+            await emojize_message(message)
+
         # detect & translate non-english phrases
         if await has_role(message, "autotranslate"):
             translation = await translate(message, content)
@@ -91,7 +95,7 @@ async def botmode(ctx):
 @bot.command(aliases=["em", "list-emojis"])
 async def emojis(ctx):
     """lists the guild's emojis"""
-    await ctx.send(' '.join(str(e) for e in ctx.message.guild.emojis))
+    await ctx.send("Server emojis:\n\n" + ' '.join(str(e) for e in ctx.message.guild.emojis))
 
 
 @bot.command(aliases=["te", "toggle-emojify"])
