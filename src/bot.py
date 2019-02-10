@@ -13,7 +13,7 @@ gettext.install('base', localedir='locale')  # let's do nothing too crazy for no
 # project imports
 # from keys import DISCORD_CLIENT_ID
 from utils import msg_to_member, after_space, \
-    get_role, toggle_role_for, create_roles_if_needed
+    get_role, toggle_role_for, create_roles_if_needed, has_role
 from reactions import emojize_message
 from membership import membership_duration
 from cogs.chitchat import send_message, good_bot_reply, process_reply
@@ -27,7 +27,6 @@ from sparql import Sparql
 MEDIA_PATH = "../media/"
 COMMAND_PREFIX = '$'
 HR = '\n' + ('-' * 50)
-AUTO_TRANSLATE = False
 
 # setup
 # client = discord.Client()
@@ -46,7 +45,7 @@ async def on_ready():
           f"with access to: \n {' & '.join(str(g) for g in bot.guilds)}{HR}")
 
     for guild in bot.guilds:
-        await create_roles_if_needed(guild, "emojifier", "botmode")
+        await create_roles_if_needed(guild, "emojifier", "botmode", "autotranslate")
 
 
 @bot.event
@@ -61,7 +60,7 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     # await ctx.invoke(bot.get_command("testme"), "hello")
 
-    if message.author in get_role(guild, "botmode").members:
+    if await has_role(message, "botmode"):
         await delete_msg_in(message)
 
     if content[0] != COMMAND_PREFIX:
@@ -70,13 +69,21 @@ async def on_message(message):
         await process_reply(message)
 
         # detect & translate non-english phrases
-        if AUTO_TRANSLATE:
+        if await has_role(message, "autotranslate"):
+            print("translating")
             translation = await translate(message, content)
             if translation.src != "en":
                 msg = f"`{content}` means \n`{translation.text}`"
                 await send_message(message, text=msg)
     else:
         await bot.process_commands(message)
+
+
+@bot.command(aliases=["tt", "toggle-autotranslate"])
+async def autotranslate(ctx):
+    """toggles auto-translate function of bot"""
+    await toggle_role_for(ctx, "autotranslate", ("I'll now translate everything you say to english!",
+                                                 "I'll stop translating everything you say to english!"))
 
 
 @bot.command(aliases=["membership-duration"])
@@ -89,19 +96,19 @@ async def membership(ctx, arg):
 
 
 # delete every msg by user after a few secs
-@bot.command(aliases=["toggle-botmode"])
+@bot.command(aliases=["bm", "toggle-botmode"])
 async def botmode(ctx):
     """In botmode, commands and replies auto-delete after a while"""
     await toggle_role_for(ctx, "botmode", ("bot mode on!", "bot mode off!"))
 
 
-@bot.command(aliases=["list-emojis"])
+@bot.command(aliases=["em", "list-emojis"])
 async def emojis(ctx):
     """lists the guild's emojis"""
     await ctx.send(' '.join(str(e) for e in ctx.message.guild.emojis))
 
 
-@bot.command(aliases=["toggle-emojify"])
+@bot.command(aliases=["te", "toggle-emojify"])
 async def emojify(ctx):
     """toggles 'emojifier' role, where botty react to what you say with emojis"""
     await toggle_role_for(ctx, "emojifier", ("ONE OF US!", f"ET TU, {ctx.message.author.name}...?"))
@@ -118,7 +125,7 @@ async def fancify(ctx, *text):
     await send_message(ctx.message, ' '.join(fancy_text))
 
 
-@bot.command(aliases=["translate"])
+@bot.command(aliases=["tr", "translate"])
 async def trans(ctx, text):
     """google translates to english"""
     await ctx.send((await translate(ctx.message, text)).text)
