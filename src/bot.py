@@ -18,19 +18,19 @@ from utils import msg_to_member, after_space, \
 from membership import membership_duration
 from botmode import delete_msg_in
 from dictionary import get_synonyms
-from languages import translate
 from nlp import find_match
 from sparql import Sparql
 
 from cogs.chitchat import send_message, process_reply
 from cogs.reactions import emojize_message
+from cogs.languages import translate
 
 # setup
 # client = discord.Client()
 bot = commands.Bot(command_prefix=COMMAND_PREFIX,
                    description="Halp urself")
 
-startup_extensions = ["cogs.simple", "cogs.images", "cogs.reactions"]
+startup_extensions = ["cogs.simple", "cogs.images", "cogs.reactions", "cogs.languages"]
 
 # global vars
 emoji_dict = {}
@@ -102,19 +102,6 @@ async def fancify(ctx, *text):
         fancier = get_synonyms(word, "longest")
         fancy_text.append(fancier[0] if fancier else word)
     await ctx.send(' '.join(fancy_text))
-
-
-@bot.command(aliases=["tr", "translate"])
-async def trans(ctx, text):
-    """google translates to english"""
-    await ctx.send((await translate(ctx.message, text)).text)
-
-
-@bot.command(aliases=["tt", "toggle-autotranslate"])
-async def autotranslate(ctx):
-    """toggles auto-translate function of bot"""
-    await toggle_role_for(ctx, "autotranslate", ("I'll now translate everything you say to english!",
-                                                 "I'll stop translating everything you say to english!"))
 
 
 @bot.command(aliases=["we"])
