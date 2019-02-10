@@ -9,7 +9,6 @@ GOOD_BOT_REPLIES = [_("That's what you are, but what am I?"),  # these replies a
 
 
 async def send_message(message, text=_("Hello!"), delete_in=False):  # Note: this translation will be evaluated at initialization
-    print(_("received a message"), '-', message.content, '\n', message)
 
     msg = await message.channel.send(text)
 

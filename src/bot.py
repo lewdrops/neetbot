@@ -12,6 +12,7 @@ gettext.install('base', localedir='locale')  # let's do nothing too crazy for no
 
 # project imports
 # from keys import DISCORD_CLIENT_ID
+from bot_constants import MEDIA_PATH, COMMAND_PREFIX, HR
 from utils import msg_to_member, after_space, \
     get_role, toggle_role_for, create_roles_if_needed, has_role
 from reactions import emojize_message
@@ -22,11 +23,6 @@ from dictionary import get_synonyms
 from languages import translate
 from nlp import find_match
 from sparql import Sparql
-
-# global constants
-MEDIA_PATH = "../media/"
-COMMAND_PREFIX = '$'
-HR = '\n' + ('-' * 50)
 
 # setup
 # client = discord.Client()
@@ -50,15 +46,13 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    content = message.content
-    guild = message.guild
+    content, guild, author = message.content, message.guild, message.author
 
     # ignore own messages as well as those without text
     if message.author == bot.user or not content:
         return
 
-    ctx = await bot.get_context(message)
-    # await ctx.invoke(bot.get_command("testme"), "hello")
+    print(f"got a message: {content}")
 
     if await has_role(message, "botmode"):
         await delete_msg_in(message)
