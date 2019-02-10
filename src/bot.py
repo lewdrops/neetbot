@@ -12,11 +12,11 @@ gettext.install('base', localedir='locale')  # let's do nothing too crazy for no
 
 # project imports
 # from keys import DISCORD_CLIENT_ID
-from utils import msg_to_member, after_space, get_role, toggle_role_for
-from emojizeMessage import emojize_message
+from utils import msg_to_member, after_space, \
+    get_role, toggle_role_for, create_roles_if_needed
+from reactions import emojize_message
 from membership import membership_duration
 from cogs.chitchat import send_message, good_bot_reply, process_reply
-import cogs.images
 from botmode import delete_msg_in
 from dictionary import get_synonyms
 from languages import translate
@@ -32,47 +32,47 @@ COMMAND_PREFIX = '$'
 bot = commands.Bot(command_prefix=COMMAND_PREFIX,
                    description="Halp urself")
 
-extensions = ["cogs.simple", "cogs.images"]
+startup_extensions = ["cogs.simple", "cogs.images"]
 
 # global vars
 emoji_dict = {}
 
 
-if __name__ == "__main__":
-    for extension in extensions:
-        try:
-            bot.load_extension(extension)
-        except Exception as e:
-            print(f'Failed to load extension {extension}.', file=sys.stderr)
-            traceback.print_exc()
-
-
 @bot.event
 async def on_ready():
     print(f"We have logged in as {bot.user}")
+    print(bot.guilds)
+    for guild in bot.guilds:
+        await create_roles_if_needed(guild, "emojifier", "botmode")
 
 
 @bot.event
 async def on_message(message):
     content = message.content
+    guild = message.guild
 
-    if message.author == bot.user \
-            or not content \
-            or content[0] is COMMAND_PREFIX:
+    # ignore own messages as well as those without text
+    if message.author == bot.user or not content:
         return
 
-    await process_reply(message)
+    ctx = await bot.get_context(message)
+    # await ctx.invoke(bot.get_command("testme"), "hello")
 
-    if message.author in get_role(message, "botmode").members:
+    if message.author in get_role(guild, "botmode").members:
         await delete_msg_in(message)
 
-    # preempt translation
-    translation = await translate(message, content)
-    if translation.src != "en":
-        msg = f"`{content}` means \n`{translation.text}`"
-        await send_message(message, text=msg)
+    if content[0] != COMMAND_PREFIX:
 
-    await bot.process_commands(message)
+        # consider clever replies
+        await process_reply(message)
+
+        # detect & translate non-english phrases
+        translation = await translate(message, content)
+        if translation.src != "en":
+            msg = f"`{content}` means \n`{translation.text}`"
+            await send_message(message, text=msg)
+    else:
+        await bot.process_commands(message)
 
 
 @bot.command(aliases=["membership-duration"])
@@ -133,4 +133,13 @@ async def sparql(ctx, *text):
                "{result}"
                "```\n").format(result=Sparql(text[0], text[1:])))
 
-bot.run(environ['DISCORD_BOT_TOKEN'], reconnect=True)
+
+if __name__ == "__main__":
+    for extension in startup_extensions:
+        try:
+            bot.load_extension(extension)
+        except Exception as e:
+            print(f'Failed to load extension {extension}.', file=sys.stderr)
+            traceback.print_exc()
+
+    bot.run(environ['DISCORD_BOT_TOKEN'], bot=True, reconnect=True)
