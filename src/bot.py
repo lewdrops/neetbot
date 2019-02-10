@@ -70,20 +70,12 @@ async def on_message(message):
 
         # detect & translate non-english phrases
         if await has_role(message, "autotranslate"):
-            print("translating")
             translation = await translate(message, content)
             if translation.src != "en":
-                msg = f"`{content}` means \n`{translation.text}`"
+                msg = f"```⇒ {translation.text}```"
                 await send_message(message, text=msg)
     else:
         await bot.process_commands(message)
-
-
-@bot.command(aliases=["tt", "toggle-autotranslate"])
-async def autotranslate(ctx):
-    """toggles auto-translate function of bot"""
-    await toggle_role_for(ctx, "autotranslate", ("I'll now translate everything you say to english!",
-                                                 "I'll stop translating everything you say to english!"))
 
 
 @bot.command(aliases=["membership-duration"])
@@ -129,6 +121,13 @@ async def fancify(ctx, *text):
 async def trans(ctx, text):
     """google translates to english"""
     await ctx.send((await translate(ctx.message, text)).text)
+
+
+@bot.command(aliases=["tt", "toggle-autotranslate"])
+async def autotranslate(ctx):
+    """toggles auto-translate function of bot"""
+    await toggle_role_for(ctx, "autotranslate", ("I'll now translate everything you say to english!",
+                                                 "I'll stop translating everything you say to english!"))
 
 
 @bot.command(aliases=["we"])

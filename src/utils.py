@@ -38,7 +38,7 @@ async def toggle_role_for(ctx, role_name, notices=(None, None)):
 
 
 async def has_role(message, role_name):
-    return message.author in get_role(message.guild, "botmode").members
+    return message.author in get_role(message.guild, role_name).members
 
 
 def after_space(S):
