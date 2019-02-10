@@ -19,7 +19,7 @@ async def create_roles_if_needed(guild, *role_names):
     for name in role_names:
         if not get_role(guild, name):
             await guild.create_role(name=name)
-            print(f"created {name}")
+            print(f"created role '{name}' in {guild}")
 
 
 async def toggle_role_for(ctx, role_name, notices=(None, None)):

@@ -26,6 +26,8 @@ from sparql import Sparql
 # global constants
 MEDIA_PATH = "../media/"
 COMMAND_PREFIX = '$'
+HR = '\n' + ('-' * 50)
+AUTO_TRANSLATE = False
 
 # setup
 # client = discord.Client()
@@ -40,8 +42,9 @@ emoji_dict = {}
 
 @bot.event
 async def on_ready():
-    print(f"We have logged in as {bot.user}")
-    print(bot.guilds)
+    print(f"Logged in as {bot.user} "
+          f"with access to: \n {' & '.join(str(g) for g in bot.guilds)}{HR}")
+
     for guild in bot.guilds:
         await create_roles_if_needed(guild, "emojifier", "botmode")
 
@@ -67,10 +70,11 @@ async def on_message(message):
         await process_reply(message)
 
         # detect & translate non-english phrases
-        translation = await translate(message, content)
-        if translation.src != "en":
-            msg = f"`{content}` means \n`{translation.text}`"
-            await send_message(message, text=msg)
+        if AUTO_TRANSLATE:
+            translation = await translate(message, content)
+            if translation.src != "en":
+                msg = f"`{content}` means \n`{translation.text}`"
+                await send_message(message, text=msg)
     else:
         await bot.process_commands(message)
 
