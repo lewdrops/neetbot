@@ -1,3 +1,4 @@
+# todo: have high confidence target lang is not english before translating!
 from discord.ext import commands
 from googletrans import Translator
 

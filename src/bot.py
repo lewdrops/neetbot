@@ -30,7 +30,7 @@ from cogs.languages import translate
 bot = commands.Bot(command_prefix=COMMAND_PREFIX,
                    description="Halp urself")
 
-startup_extensions = ["cogs.images", "cogs.reactions", "cogs.languages"]
+startup_extensions = ["cogs.images", "cogs.reactions", "cogs.languages", "cogs.natlang"]
 
 # global vars
 emoji_dict = {}
@@ -91,17 +91,6 @@ async def membership(ctx, arg):
 async def botmode(ctx):
     """In botmode, commands and replies auto-delete after a while"""
     await toggle_role_for(ctx, "botmode", ("bot mode on!", "bot mode off!"))
-
-
-@bot.command()
-async def fancify(ctx, *text):
-    """substitute fancy words to sound pretentious"""
-
-    fancy_text = []
-    for word in text:
-        fancier = get_synonyms(word, "longest")
-        fancy_text.append(fancier[0] if fancier else word)
-    await ctx.send(' '.join(fancy_text))
 
 
 @bot.command(aliases=["we"])

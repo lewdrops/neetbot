@@ -23,3 +23,14 @@ def get_synonyms(word, task="first", num=1):
     except:
         print("synonym fail!")
         return
+
+
+# @bot.command()
+# async def fancify(ctx, *text):
+#     """substitute fancy words to sound pretentious"""
+#
+#     fancy_text = []
+#     for word in text:
+#         fancier = get_synonyms(word, "longest")
+#         fancy_text.append(fancier[0] if fancier else word)
+#     await ctx.send(' '.join(fancy_text))
