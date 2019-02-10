@@ -15,21 +15,22 @@ gettext.install('base', localedir='locale')  # let's do nothing too crazy for no
 from bot_constants import MEDIA_PATH, COMMAND_PREFIX, HR
 from utils import msg_to_member, after_space, \
     get_role, toggle_role_for, create_roles_if_needed, has_role
-from reactions import emojize_message
 from membership import membership_duration
-from cogs.chitchat import send_message, good_bot_reply, process_reply
 from botmode import delete_msg_in
 from dictionary import get_synonyms
 from languages import translate
 from nlp import find_match
 from sparql import Sparql
 
+from cogs.chitchat import send_message, process_reply
+from cogs.reactions import emojize_message
+
 # setup
 # client = discord.Client()
 bot = commands.Bot(command_prefix=COMMAND_PREFIX,
                    description="Halp urself")
 
-startup_extensions = ["cogs.simple", "cogs.images"]
+startup_extensions = ["cogs.simple", "cogs.images", "cogs.reactions"]
 
 # global vars
 emoji_dict = {}
@@ -90,18 +91,6 @@ async def membership(ctx, arg):
 async def botmode(ctx):
     """In botmode, commands and replies auto-delete after a while"""
     await toggle_role_for(ctx, "botmode", ("bot mode on!", "bot mode off!"))
-
-
-@bot.command(aliases=["em", "list-emojis"])
-async def emojis(ctx):
-    """lists the guild's emojis"""
-    await ctx.send("Server emojis:\n\n" + ' '.join(str(e) for e in ctx.message.guild.emojis))
-
-
-@bot.command(aliases=["te", "toggle-emojify"])
-async def emojify(ctx):
-    """toggles 'emojifier' role, where botty react to what you say with emojis"""
-    await toggle_role_for(ctx, "emojifier", ("ONE OF US!", f"ET TU, {ctx.message.author.name}...?"))
 
 
 @bot.command()
