@@ -27,7 +27,7 @@ async def toggle_role_for(ctx, role_name, notices=(None, None)):
     role = get_role(ctx.guild, role_name)
 
     if notices == (None, None):
-        notrices = (f"{role_name} added to {user}", f"{role_name} removed from {user}")
+        notices = (f"{role_name} added to {user}", f"{role_name} removed from {user}")
 
     if user in role.members:
         await user.remove_roles(role)
@@ -35,6 +35,10 @@ async def toggle_role_for(ctx, role_name, notices=(None, None)):
     else:
         await user.add_roles(role)
         await ctx.send(notices[0])  # role added notice
+
+
+async def has_role(message, role_name):
+    return message.author in get_role(message.guild, "botmode").members
 
 
 def after_space(S):
