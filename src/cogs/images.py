@@ -53,19 +53,19 @@ class ImagesCog:
         self.bot = bot
 
     @commands.command(aliases=["picture", "pic-of"])
-    async def pic(self, ctx, keyword):
+    async def pic(self, ctx, *keywords):
         """embed a pic from google images for the keyword"""
 
         e = discord.Embed()
-        e.set_image(url=await image_link_of(keyword))
+        e.set_image(url=await image_link_of(' '.join(keywords)))
         await ctx.send(embed=e)
 
     @commands.command(aliases=["gif-of"])
-    async def gif(self, ctx, keyword):
+    async def gif(self, ctx, *keywords):
         """embed a gif from google images for the keyword"""
 
         e = discord.Embed()
-        e.set_image(url=await image_link_of(keyword, format="gif"))
+        e.set_image(url=await image_link_of(' '.join(keywords), format="gif"))
         await ctx.send(embed=e)
 
 
