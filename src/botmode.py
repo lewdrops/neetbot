@@ -1,3 +1,4 @@
+# todo: delete bot's own replies in botmode
 import asyncio
 
 BOTMODE_DELETION_TIME = 3
